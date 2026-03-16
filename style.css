@@ -22,6 +22,12 @@ Fonts:
   box-sizing: border-box;
 }
 
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -40,6 +46,10 @@ body {
 }
 
 h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   text-align: center;
   font-size: 30px;
   font-weight: bold;
@@ -48,9 +58,11 @@ h1 {
 }
 
 h1 img {
-  height: 50px;
-  margin-right: 15px;
-  display: block;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: inline-block;
 }
 
 .game-instructions {
@@ -73,6 +85,34 @@ h1 img {
   font-size: 18px;
   font-weight: bold;
   color: #333;
+}
+
+.achievement {
+  margin: 0 auto;
+  max-width: 500px;
+  text-align: center;
+}
+
+.achievement:empty {
+  display: none;
+}
+
+.achievement:not(:empty) {
+  margin-bottom: 24px;
+  min-height: 120px;
+}
+
+.achievement-message {
+  margin: 0 0 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #2e9df7;
+}
+
+.achievement-image {
+  width: min(100%, 320px);
+  max-height: 64px;
+  object-fit: contain;
 }
 
 .game-grid {
@@ -140,4 +180,9 @@ button {
   display: block;
   margin: 30px auto 0;
   transition: background-color 0.2s;
+}
+
+#end-game {
+  background-color: #f5402c;
+  margin-top: 12px;
 }
