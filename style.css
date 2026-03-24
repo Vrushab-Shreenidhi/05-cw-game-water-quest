@@ -23,11 +23,18 @@ Fonts:
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Proxima Nova', Avenir, 'Avenir Next', 'Segoe UI', sans-serif;
   margin: 0;
   padding: 30px;
   background-color: #f0f0f0;
   color: #333;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 .container {
@@ -61,6 +68,32 @@ h1 img {
   font-size: 18px;
   margin-bottom: 30px;
   text-align: center;
+}
+
+.difficulty-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.difficulty-controls label {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.difficulty-controls select {
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 8px 12px;
+  font-size: 16px;
+}
+
+.difficulty-controls select:disabled {
+  background-color: #f2f2f2;
+  color: #666;
 }
 
 .stats {
@@ -177,4 +210,65 @@ button {
 #end-game {
   background-color: #f5402c;
   margin-top: 12px;
+}
+
+.charity-footer {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid #e3e3e3;
+  text-align: center;
+}
+
+.charity-footer p {
+  margin: 0 0 12px;
+  color: #444;
+  font-size: 15px;
+}
+
+.charity-links {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.charity-links a {
+  color: #2e9df7;
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.charity-links .charity-site-link {
+  border-bottom: none;
+}
+
+.charity-links a:hover,
+.charity-links a:focus {
+  color: #159a48;
+  border-color: #159a48;
+}
+
+.charity-links .charity-site-link:hover,
+.charity-links .charity-site-link:focus {
+  color: #000;
+  border-color: #000;
+}
+
+.donate-image {
+  display: block;
+  height: 105px;
+  width: auto;
+}
+
+.charity-site-image {
+  display: block;
+  width: 105px;
+  height: 105px;
+  object-fit: contain;
+}
+
+.charity-links .donate-link {
+  border-bottom: none;
 }

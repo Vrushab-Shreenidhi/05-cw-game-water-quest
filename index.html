@@ -10,6 +10,14 @@
   <div class="container">
     <h1><img src="img/cw_logo.png" alt="charity: water logo">Water Quest</h1>
     <p class="game-instructions">Collect 20 or more cans before time runs out to win!</p>
+    <div class="difficulty-controls">
+      <label for="difficulty-select">Difficulty:</label>
+      <select id="difficulty-select" aria-label="Select game difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
     <div class="stats">
       <p>Cans Collected: <span id="current-cans">0</span></p>
       <p>Time Left: <span id="timer">30</span>s</p>
@@ -18,6 +26,18 @@
     <div class="game-grid"></div>
     <button id="start-game">Start Game</button>
     <button id="end-game" hidden>End Game</button>
+
+    <footer class="charity-footer" aria-label="charity: water links">
+      <p>Learn more and support clean water projects:</p>
+      <div class="charity-links">
+        <a class="charity-site-link" href="https://www.charitywater.org/" target="_blank" rel="noopener noreferrer" aria-label="Visit charity: water website">
+          <img src="img/water-can.png" alt="charity: water website" class="charity-site-image" />
+        </a>
+        <a class="donate-link" href="https://www.charitywater.org/donate" target="_blank" rel="noopener noreferrer" aria-label="Donate to charity: water">
+          <img src="donate.png" alt="Donate" class="donate-image" />
+        </a>
+      </div>
+    </footer>
   </div>
   <script src="script.js"></script>
 </body>

@@ -1,15 +1,42 @@
 // Game configuration and state variables
-const WINNING_SCORE = 20;    // Minimum score needed to win
+const DIFFICULTY_SETTINGS = {
+  easy: {
+    label: 'Easy',
+    winningScore: 15,
+    gameDuration: 35,
+    spawnRate: 1200
+  },
+  medium: {
+    label: 'Medium',
+    winningScore: 20,
+    gameDuration: 30,
+    spawnRate: 1000
+  },
+  hard: {
+    label: 'Hard',
+    winningScore: 25,
+    gameDuration: 25,
+    spawnRate: 700
+  }
+};
+
+let currentDifficulty = 'medium';
+let winningScore = DIFFICULTY_SETTINGS[currentDifficulty].winningScore;
+let gameDuration = DIFFICULTY_SETTINGS[currentDifficulty].gameDuration;
+let spawnRate = DIFFICULTY_SETTINGS[currentDifficulty].spawnRate;
 let currentCans = 0;         // Current number of items collected
 let gameActive = false;      // Tracks if game is currently running
-let spawnInterval;          // Holds the interval for spawning items
-let timerInterval;          // Holds the interval for countdown timer
-const GAME_DURATION = 30;   // Total seconds per round
-let timeLeft = GAME_DURATION;
+let spawnInterval;           // Holds the interval for spawning items
+let timerInterval;           // Holds the interval for countdown timer
+let timeLeft = gameDuration;
 
 const startButton = document.getElementById('start-game');
 const endButton = document.getElementById('end-game');
 const achievements = document.getElementById('achievements');
+const gameInstructions = document.querySelector('.game-instructions');
+const difficultySelect = document.getElementById('difficulty-select');
+const winSound = new Audio('wonsound.mp3');
+const lossSound = new Audio('losssound.mp3');
 
 const winningMessages = [
   'Winner!',
@@ -29,8 +56,26 @@ function getRandomItem(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+function updateInstructionText() {
+  const difficultyLabel = DIFFICULTY_SETTINGS[currentDifficulty].label;
+  if (gameInstructions) {
+    gameInstructions.textContent = `${difficultyLabel} mode: Collect ${winningScore} or more cans before time runs out to win!`;
+  }
+}
+
+function applyDifficultySettings() {
+  currentDifficulty = difficultySelect.value;
+  const settings = DIFFICULTY_SETTINGS[currentDifficulty];
+  winningScore = settings.winningScore;
+  gameDuration = settings.gameDuration;
+  spawnRate = settings.spawnRate;
+  timeLeft = gameDuration;
+  updateTimerDisplay();
+  updateInstructionText();
+}
+
 function showGameResult(finalScore) {
-  const didWin = finalScore >= WINNING_SCORE;
+  const didWin = finalScore >= winningScore;
   const message = didWin ? getRandomItem(winningMessages) : getRandomItem(losingMessages);
   const imageSrc = getRandomItem(resultImages);
 
@@ -38,6 +83,12 @@ function showGameResult(finalScore) {
     <p class="achievement-message">${message}</p>
     <img class="achievement-image" src="${imageSrc}" alt="Game result image" />
   `;
+
+  const resultSound = didWin ? winSound : lossSound;
+  resultSound.currentTime = 0;
+  resultSound.play().catch(() => {
+    // Ignore playback failures (for example, if the browser blocks autoplay).
+  });
 }
 
 function updateTimerDisplay() {
@@ -90,10 +141,12 @@ function spawnWaterCan() {
 // Initializes and starts a new game
 function startGame() {
   if (gameActive) return; // Prevent starting a new game if one is already active
+  applyDifficultySettings();
   gameActive = true;
   currentCans = 0;
-  timeLeft = GAME_DURATION;
+  timeLeft = gameDuration;
   achievements.textContent = '';
+  difficultySelect.disabled = true;
   updateCanCounter();
   updateTimerDisplay();
   createGrid(); // Set up the game grid
@@ -101,7 +154,7 @@ function startGame() {
 
   clearInterval(spawnInterval);
   clearInterval(timerInterval);
-  spawnInterval = setInterval(spawnWaterCan, 1000); // Spawn water cans every second
+  spawnInterval = setInterval(spawnWaterCan, spawnRate);
   timerInterval = setInterval(() => {
     if (!gameActive) return;
 
@@ -114,21 +167,33 @@ function startGame() {
   }, 1000);
 }
 
-function endGame() {
+function endGame(showResult = true) {
   const finalScore = currentCans;
   gameActive = false; // Mark the game as inactive
   clearInterval(spawnInterval); // Stop spawning water cans
   clearInterval(timerInterval); // Stop countdown timer
+  difficultySelect.disabled = false;
   document.querySelectorAll('.grid-cell').forEach(cell => (cell.innerHTML = ''));
-  showGameResult(finalScore);
-  timeLeft = GAME_DURATION;
+
+  if (showResult) {
+    showGameResult(finalScore);
+  } else {
+    achievements.innerHTML = '';
+  }
+
+  timeLeft = gameDuration;
   updateTimerDisplay();
   endButton.hidden = true;
 }
 
 // Set up click handler for the start button
 startButton.addEventListener('click', startGame);
-endButton.addEventListener('click', endGame);
+endButton.addEventListener('click', () => endGame(false));
+difficultySelect.addEventListener('change', () => {
+  if (!gameActive) {
+    applyDifficultySettings();
+  }
+});
 
 // Increment cans when a visible water can is clicked
 document.querySelector('.game-grid').addEventListener('click', (event) => {
@@ -143,4 +208,4 @@ document.querySelector('.game-grid').addEventListener('click', (event) => {
 });
 
 updateCanCounter();
-updateTimerDisplay();
+applyDifficultySettings();
