@@ -65,6 +65,40 @@ h1 img {
   display: inline-block;
 }
 
+.difficulty-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.difficulty-selector label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.difficulty-selector select {
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 2px solid #2E9DF7;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #fff;
+  color: #333;
+  transition: border-color 0.2s;
+}
+
+.difficulty-selector select:hover {
+  border-color: #4FCB53;
+}
+
+.difficulty-selector select:focus {
+  outline: none;
+  border-color: #FFC907;
+}
+
 .game-instructions {
   font-size: 18px;
   margin-bottom: 30px;
