@@ -1,15 +1,37 @@
 // Game configuration and state variables
-const WINNING_SCORE = 20;
+const DIFFICULTY_SETTINGS = {
+  easy: {
+    label: 'Easy',
+    winningScore: 15,
+    gameDuration: 35,
+    spawnRate: 1200
+  },
+  medium: {
+    label: 'Medium',
+    winningScore: 20,
+    gameDuration: 30,
+    spawnRate: 1000
+  },
+  hard: {
+    label: 'Hard',
+    winningScore: 25,
+    gameDuration: 25,
+    spawnRate: 700
+  }
+};
+
 let currentCans = 0;
 let gameActive = false;
 let spawnInterval;
 let timerInterval;
-const GAME_DURATION = 30;
-let timeLeft = GAME_DURATION;
+let currentDifficulty = 'medium';
+let timeLeft = DIFFICULTY_SETTINGS[currentDifficulty].gameDuration;
 
 const startButton = document.getElementById('start-game');
 const endButton = document.getElementById('end-game');
 const achievements = document.getElementById('achievements');
+const difficultySelect = document.getElementById('difficulty');
+const instructions = document.getElementById('game-instructions');
 
 const winningMessages = [
   'Winner!',
@@ -30,7 +52,8 @@ function getRandomItem(items) {
 }
 
 function showGameResult(finalScore) {
-  const didWin = finalScore >= WINNING_SCORE;
+  const difficultyConfig = DIFFICULTY_SETTINGS[currentDifficulty];
+  const didWin = finalScore >= difficultyConfig.winningScore;
   const message = didWin ? getRandomItem(winningMessages) : getRandomItem(losingMessages);
   const imageSrc = getRandomItem(resultImages);
 
@@ -38,6 +61,12 @@ function showGameResult(finalScore) {
     <p class="achievement-message">${message}</p>
     <img class="achievement-image" src="${imageSrc}" alt="Game result image" />
   `;
+}
+
+function updateInstructions() {
+  const difficultyConfig = DIFFICULTY_SETTINGS[currentDifficulty];
+  if (!instructions) return;
+  instructions.textContent = `Mode: ${difficultyConfig.label}. Collect ${difficultyConfig.winningScore} or more cans in ${difficultyConfig.gameDuration}s to win!`;
 }
 
 function updateTimerDisplay() {
@@ -83,18 +112,26 @@ function spawnWaterCan() {
 
 function startGame() {
   if (gameActive) return;
+  const selectedDifficulty = difficultySelect ? difficultySelect.value : currentDifficulty;
+  currentDifficulty = DIFFICULTY_SETTINGS[selectedDifficulty] ? selectedDifficulty : 'medium';
+  const difficultyConfig = DIFFICULTY_SETTINGS[currentDifficulty];
+
   gameActive = true;
   currentCans = 0;
-  timeLeft = GAME_DURATION;
+  timeLeft = difficultyConfig.gameDuration;
   achievements.textContent = '';
   updateCanCounter();
   updateTimerDisplay();
+  updateInstructions();
   createGrid();
   endButton.hidden = false;
+  if (difficultySelect) {
+    difficultySelect.disabled = true;
+  }
 
   clearInterval(spawnInterval);
   clearInterval(timerInterval);
-  spawnInterval = setInterval(spawnWaterCan, 1000);
+  spawnInterval = setInterval(spawnWaterCan, difficultyConfig.spawnRate);
   timerInterval = setInterval(() => {
     if (!gameActive) return;
 
@@ -109,18 +146,31 @@ function startGame() {
 
 function endGame() {
   const finalScore = currentCans;
+  const difficultyConfig = DIFFICULTY_SETTINGS[currentDifficulty];
   gameActive = false;
   clearInterval(spawnInterval);
   clearInterval(timerInterval);
   document.querySelectorAll('.grid-cell').forEach(cell => (cell.innerHTML = ''));
   showGameResult(finalScore);
-  timeLeft = GAME_DURATION;
+  timeLeft = difficultyConfig.gameDuration;
   updateTimerDisplay();
   endButton.hidden = true;
+  if (difficultySelect) {
+    difficultySelect.disabled = false;
+  }
 }
 
 startButton.addEventListener('click', startGame);
 endButton.addEventListener('click', endGame);
+if (difficultySelect) {
+  difficultySelect.addEventListener('change', (event) => {
+    currentDifficulty = event.target.value;
+    const difficultyConfig = DIFFICULTY_SETTINGS[currentDifficulty];
+    timeLeft = difficultyConfig.gameDuration;
+    updateTimerDisplay();
+    updateInstructions();
+  });
+}
 
 document.querySelector('.game-grid').addEventListener('click', (event) => {
   if (!gameActive) return;
@@ -134,4 +184,5 @@ document.querySelector('.game-grid').addEventListener('click', (event) => {
 });
 
 updateCanCounter();
+updateInstructions();
 updateTimerDisplay();

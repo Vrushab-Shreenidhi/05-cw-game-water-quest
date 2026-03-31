@@ -9,7 +9,15 @@
 <body>
   <div class="container">
     <h1><img src="https://raw.githubusercontent.com/Vrushab-Shreenidhi/05-cw-game-water-quest/main/img/cw_logo.png" alt="charity: water logo">Water Quest</h1>
-    <p class="game-instructions">Collect 20 or more cans before time runs out to win!</p>
+    <p class="game-instructions" id="game-instructions">Collect 20 or more cans before time runs out to win!</p>
+    <div class="difficulty-controls">
+      <label for="difficulty">Difficulty:</label>
+      <select id="difficulty" aria-label="Select difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
     <div class="stats">
       <p>Cans Collected: <span id="current-cans">0</span></p>
       <p>Time Left: <span id="timer">30</span>s</p>
