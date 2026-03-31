@@ -1,15 +1,40 @@
 // Game configuration and state variables
-const WINNING_SCORE = 20;    // Minimum score needed to win
+let WINNING_SCORE = 20;      // Minimum score needed to win (changes with difficulty)
 let currentCans = 0;         // Current number of items collected
 let gameActive = false;      // Tracks if game is currently running
 let spawnInterval;          // Holds the interval for spawning items
 let timerInterval;          // Holds the interval for countdown timer
-const GAME_DURATION = 30;   // Total seconds per round
+let GAME_DURATION = 30;      // Total seconds per round (changes with difficulty)
 let timeLeft = GAME_DURATION;
+
+// Difficulty mode configuration
+const DIFFICULTY_SETTINGS = {
+  easy: {
+    winningScore: 15,
+    gameDuration: 30,
+    label: 'Easy: Collect 15 cans before time runs out to win!'
+  },
+  medium: {
+    winningScore: 20,
+    gameDuration: 25,
+    label: 'Medium: Collect 20 cans before time runs out to win!'
+  },
+  hard: {
+    winningScore: 30,
+    gameDuration: 20,
+    label: 'Hard: Collect 30 cans before time runs out to win!'
+  }
+};
+
+let selectedDifficulty = 'medium'; // Default to medium
 
 const startButton = document.getElementById('start-game');
 const endButton = document.getElementById('end-game');
 const achievements = document.getElementById('achievements');
+const difficultySelector = document.getElementById('difficulty');
+const instructionsElement = document.getElementById('instructions');
+const winSound = document.getElementById('win-sound');
+const lossSound = document.getElementById('loss-sound');
 
 const winningMessages = [
   'Winner!',
@@ -33,6 +58,15 @@ function showGameResult(finalScore) {
   const didWin = finalScore >= WINNING_SCORE;
   const message = didWin ? getRandomItem(winningMessages) : getRandomItem(losingMessages);
   const imageSrc = getRandomItem(resultImages);
+
+  // Play win or loss sound
+  if (didWin) {
+    winSound.currentTime = 0;
+    winSound.play().catch(e => console.log('Win sound play failed:', e));
+  } else {
+    lossSound.currentTime = 0;
+    lossSound.play().catch(e => console.log('Loss sound play failed:', e));
+  }
 
   achievements.innerHTML = `
     <p class="achievement-message">${message}</p>
@@ -90,10 +124,18 @@ function spawnWaterCan() {
 // Initializes and starts a new game
 function startGame() {
   if (gameActive) return; // Prevent starting a new game if one is already active
+  
+  // Apply selected difficulty settings
+  selectedDifficulty = difficultySelector.value;
+  const settings = DIFFICULTY_SETTINGS[selectedDifficulty];
+  WINNING_SCORE = settings.winningScore;
+  GAME_DURATION = settings.gameDuration;
+  
   gameActive = true;
   currentCans = 0;
   timeLeft = GAME_DURATION;
   achievements.textContent = '';
+  difficultySelector.disabled = true; // Disable selector during game
   updateCanCounter();
   updateTimerDisplay();
   createGrid(); // Set up the game grid
@@ -124,11 +166,18 @@ function endGame() {
   timeLeft = GAME_DURATION;
   updateTimerDisplay();
   endButton.hidden = true;
+  difficultySelector.disabled = false; // Re-enable selector for next game
 }
 
 // Set up click handler for the start button
 startButton.addEventListener('click', startGame);
 endButton.addEventListener('click', endGame);
+
+// Update instructions when difficulty changes
+difficultySelector.addEventListener('change', () => {
+  const settings = DIFFICULTY_SETTINGS[difficultySelector.value];
+  instructionsElement.textContent = settings.label;
+});
 
 // Increment cans when a visible water can is clicked
 document.querySelector('.game-grid').addEventListener('click', (event) => {
@@ -142,5 +191,8 @@ document.querySelector('.game-grid').addEventListener('click', (event) => {
   clickedCell.innerHTML = '';
 });
 
+// Initialize instructions with default difficulty
+const defaultSettings = DIFFICULTY_SETTINGS[selectedDifficulty];
+instructionsElement.textContent = defaultSettings.label;
 updateCanCounter();
 updateTimerDisplay();

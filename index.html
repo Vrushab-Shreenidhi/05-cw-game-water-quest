@@ -9,7 +9,15 @@
 <body>
   <div class="container">
     <h1><img src="img/cw_logo.png" alt="charity: water logo">Water Quest</h1>
-    <p class="game-instructions">Collect 20 or more cans before time runs out to win!</p>
+    <div class="difficulty-selector" id="difficulty-selector">
+      <label for="difficulty">Choose Difficulty:</label>
+      <select id="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+    <p class="game-instructions" id="instructions">Collect 20 or more cans before time runs out to win!</p>
     <div class="stats">
       <p>Cans Collected: <span id="current-cans">0</span></p>
       <p>Time Left: <span id="timer">30</span>s</p>
@@ -19,6 +27,12 @@
     <button id="start-game">Start Game</button>
     <button id="end-game" hidden>End Game</button>
   </div>
+  <audio id="win-sound" preload="auto">
+    <source src="sounds/win.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="loss-sound" preload="auto">
+    <source src="sounds/loss.mp3" type="audio/mpeg">
+  </audio>
   <script src="script.js"></script>
 </body>
 </html>
